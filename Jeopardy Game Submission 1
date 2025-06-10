@@ -1,0 +1,63 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        boolean mainMenu = true;
+        boolean addQuestion = false;
+        boolean mainGame = false;
+
+        ArrayList<String> questionList = new ArrayList<>();
+        ArrayList<String> answerList = new ArrayList<>();
+        ArrayList<String> topicList = new ArrayList<>();
+        ArrayList<Integer> pointList = new ArrayList<>();
+        ArrayList <String> uniqueTopics = new ArrayList<>();
+
+        while (mainMenu) {
+            System.out.println("---------------------------");
+            System.out.println("|        Jeopardy!        |");
+            System.out.println("---------------------------");
+            System.out.println("Welcome to Jeopardy, please type the menu you wish to select:");
+            System.out.println("Play");
+            System.out.println("Add Question");
+            String menuChoice = sc.nextLine().toLowerCase();
+
+            if (menuChoice.equals("add question")) {
+                addQuestion = true;
+                while (addQuestion) {
+                    System.out.println("---------------------------");
+                    System.out.println("|       Add Question      |");
+                    System.out.println("---------------------------");
+
+                    System.out.println("Enter the topic of your question:");
+                    String newTopic = sc.nextLine();
+                    topicList.add(newTopic);
+
+                    System.out.println("Enter the question:");
+                    String newQuestion = sc.nextLine();
+                    questionList.add(newQuestion);
+
+                    System.out.println("Enter the correct answer:");
+                    String correctAnswer = sc.nextLine().toLowerCase();
+                    answerList.add(correctAnswer);
+
+                    System.out.println("Enter the point value of the question:");
+                    int pointValue = sc.nextInt();
+                    pointList.add(pointValue);
+
+                    System.out.println("Question '"+newQuestion+"' added under "+newTopic+" for "+pointValue+" points.");
+                    System.out.println("Add another question? (yes/no)");
+                    String response = sc.nextLine().toLowerCase();
+                    if (response.equals("no")) {
+                        addQuestion = false;
+                    }
+                }
+            } else if (menuChoice.equals("play")) {
+                mainMenu = false;
+                mainGame = true;
+            } else if (!(menuChoice.equals("add question")) || !(menuChoice.equals("play"))) {
+                System.out.println("invalid input");
+            }
+        }
+    }
+}
