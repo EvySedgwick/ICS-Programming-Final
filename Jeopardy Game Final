@@ -1,0 +1,298 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        boolean mainMenu = true;
+        boolean addQuestion = false;
+        boolean mainGame = false;
+        //booleans for each menu so that when the condition is true in a while loop it can restart
+
+        while (mainMenu) {
+            ArrayList<String> questionList = new ArrayList<>();
+            ArrayList<String> answerList = new ArrayList<>();
+            ArrayList<String> topicList = new ArrayList<>();
+            ArrayList<Integer> pointList = new ArrayList<>();
+            //arraylists for each imported question, answer, topic, and point amount. When they're accessed it would all be from corresponding indexes
+
+            System.out.println("---------------------------");
+            System.out.println("|        Jeopardy!        |");
+            System.out.println("---------------------------");
+            System.out.println("Welcome to Jeopardy, please type the menu you wish to select:");
+            System.out.println("Play");
+            System.out.println("Add Question");
+            String menuChoice = sc.nextLine().toLowerCase(); //to lower case so that no error occurs when selecting the menu
+
+            if (menuChoice.equals("add question")) {
+                addQuestion = true;
+                while (addQuestion) {
+                    System.out.println("---------------------------");
+                    System.out.println("|       Add Question      |");
+                    System.out.println("---------------------------");
+
+                    System.out.println("Enter the topic of your question:");
+                    String newTopic = sc.nextLine().toLowerCase();
+                    topicList.add(newTopic);
+
+                    System.out.println("Enter the question:");
+                    String newQuestion = sc.nextLine();
+                    questionList.add(newQuestion);
+
+                    System.out.println("Enter the correct answer:");
+                    String correctAnswer = sc.nextLine().toLowerCase();
+                    answerList.add(correctAnswer);
+
+                    System.out.println("Enter the point value of the question:");
+                    int pointValue = sc.nextInt();
+                    sc.nextLine();
+                    pointList.add(pointValue);
+                    // Each arraylist element is added after each input so they would all be at the same index when needed
+
+                    System.out.println("Question '" + newQuestion + "' added under " + newTopic + " for " + pointValue + " points.");
+
+                    addQuestion = false;
+                }
+            } else if (menuChoice.equals("play")) {
+                mainMenu = false;
+                ArrayList<String> playerList = new ArrayList<>();
+                System.out.println("---------------------------");
+                System.out.println("|        Game Setup       |");
+                System.out.println("---------------------------");
+
+                System.out.println("How many players? (2-4)");
+                int playerNum = sc.nextInt();
+                sc.nextLine();
+
+                for (int i = 1; i <= playerNum; i++) {
+                    System.out.println("Enter player " + i + "'s name");
+                    String currentName = sc.nextLine();
+                    playerList.add(currentName);
+                }
+                //for loop for entering contestants names
+                for (String name : playerList) {
+                    System.out.println(name);
+                }
+
+                mainGame = true;
+                while (mainGame) {
+                    ArrayList<Integer> originalPointList = new ArrayList<>(pointList);
+                    ArrayList<Integer> playerScores = new ArrayList<>();
+                    for (int players = 0; players <= playerList.size(); players++) {
+                        playerScores.add(0);
+                    }
+                    //Arraylist used to keep track of everyone's score, as number of players are unknown/inputted
+
+
+                    int dailyDoubleQuestion = (int)(Math.random()*(questionList.size()- 0 + 1)+ 0);
+                    //daily double question
+
+
+                    ArrayList<String> uniqueTopics = new ArrayList<>();
+                    for (String topic : topicList) {
+                        if (!uniqueTopics.contains(topic)) {
+                            uniqueTopics.add(topic);
+                        }
+                    }
+
+                    int maxQuestionsPerTopic = 0;
+                    for (String topic : uniqueTopics) {
+                        int count = 0;
+                        for (String t : topicList) {
+                            if (t.equals(topic))
+                                count++;
+                        }
+                        if (count > maxQuestionsPerTopic) {
+                            maxQuestionsPerTopic = count;
+                        }
+                    }
+                    //cleans up the number of board lines based on the questions
+
+                    int questionsRemaining = questionList.size();
+                    int currentPlayerIndex = 0;
+                    while (currentPlayerIndex != playerNum + 1) { //turn system
+
+                        //main board --> gets re-printed every turn with removed questions for the answered ones
+                        for (int q = 0; q < maxQuestionsPerTopic; q++) {
+                        for (int i = 0; i <= uniqueTopics.size(); i++) {
+                            System.out.print("------------");
+                        }
+                        System.out.println();
+
+                        // Topics headers --> only unique topics are displayed, as questions under the same topic would be in the row below
+                        for (String topic : uniqueTopics) {
+                            System.out.print("|      " + topic + "      ");
+                        }
+                        System.out.println("|");
+
+                        for (int i = 0; i <= uniqueTopics.size(); i++) {
+                            System.out.print("------------");
+                        }
+                        System.out.println();
+
+                        // Point display for board
+                        for (int i = 0; i < maxQuestionsPerTopic; i++) {
+                            for (String topic : uniqueTopics) {
+                                ArrayList<Integer> questions = new ArrayList<>();
+                                for (int j = 0; j < topicList.size(); j++) {
+                                    if (topicList.get(j).equals(topic)) {
+                                        questions.add(j);
+                                    }
+                                }
+                                if (questions.size() > i) {
+                                    int questionIndex = questions.get(i);
+                                    if (questionIndex >= 0 && questionIndex < pointList.size()) {
+                                        int pointValue = pointList.get(questionIndex);
+                                        if (pointValue != 0) {
+                                            System.out.print("|       " + pointValue + "       ");
+                                        } else {
+                                            System.out.print("|        x        "); // x represents the question no longer being available
+                                        }
+                                    } else {
+                                        System.out.print("|                 ");
+                                    }
+                                } else {
+                                    System.out.print("|                 ");
+                                }
+                            }
+                            System.out.println("|");
+                        }
+                            for (int j = 0; j <= uniqueTopics.size(); j++) {
+                                System.out.print("------------");
+                            }
+                            System.out.println();
+                        }
+                        for (int i = 0; i < playerList.size(); i++) {
+                            String name = playerList.get(i);
+                            System.out.println(name+": "+playerScores.get(i));
+                        }
+
+                        String currentPlayer = playerList.get(currentPlayerIndex);
+                        System.out.println("It's " + currentPlayer + "'s turn");
+
+                        System.out.println("Choose a topic:");
+                        String chosenTopic = sc.nextLine();
+
+                        System.out.println("Choose a point value:");
+                        int chosenPoints = sc.nextInt();
+                        sc.nextLine();
+
+                        int questionIndex = -1;
+                        for (int l = 0; l < topicList.size(); l++) {
+                            if (topicList.get(l).equals(chosenTopic) && pointList.get(l) == chosenPoints) {
+                                questionIndex = l;
+                                break;
+                            }
+                        }
+
+                        if (questionIndex != -1) {
+                            int currentWager = 0;
+
+                            if (questionIndex == dailyDoubleQuestion) {
+                                System.out.println("This is a Daily Double! You can wager your points.");
+                                System.out.println("Your current points: " + playerScores.get(currentPlayerIndex));
+                                System.out.println("How much would you like to wager?");
+
+                                currentWager = sc.nextInt();
+                                sc.nextLine();
+
+                                while (currentWager <= 0 || currentWager > playerScores.get(currentPlayerIndex)) {
+                                    System.out.println("Invalid wager. Enter a value between 1 and " + playerScores.get(currentPlayerIndex));
+                                    currentWager = sc.nextInt();
+                                    sc.nextLine();
+                                }
+                            }
+
+                            // Ask the question
+                            System.out.println("Question: " + questionList.get(questionIndex));
+                            String answer = sc.nextLine().toLowerCase();
+
+                            String correctAnswer = answerList.get(questionIndex).toLowerCase();
+                            if (answer.equals(correctAnswer)) {
+                                System.out.println("Correct!");
+                                int newScore = playerScores.get(currentPlayerIndex) + chosenPoints;
+                                playerScores.set(currentPlayerIndex, newScore);
+                                if (questionIndex == dailyDoubleQuestion && currentWager > 0) {
+                                }
+                            } else {
+                                System.out.println("Incorrect. The correct answer was: " + answerList.get(questionIndex));
+                                int newScore = playerScores.get(currentPlayerIndex) - chosenPoints;
+                                playerScores.set(currentPlayerIndex, newScore);
+                                if (questionIndex == dailyDoubleQuestion && currentWager > 0) {
+                                }
+                            }
+
+                            if (questionIndex == dailyDoubleQuestion && currentWager > 0) {
+                                if (answer.equals(correctAnswer)) {
+                                } else {
+                                    int updatedScore = playerScores.get(currentPlayerIndex) - currentWager;
+                                    playerScores.set(currentPlayerIndex, updatedScore);
+                                }
+                            }
+                            pointList.set(questionIndex, 0);
+                        } else {
+                            System.out.println("Question not found or already answered");
+                        }
+                        questionsRemaining--;
+                        if (questionsRemaining == 0) {
+                            System.out.println("Game Over!");
+                            int highestScore = 0;
+                            for (int s : playerScores) {
+                                if (s > highestScore) {
+                                    highestScore = s;
+                                }
+                            }
+                            //finds the total highest score
+                            int winnersCount = 0;
+                            for (int s : playerScores) {
+                                if (s == highestScore) {
+                                    winnersCount++;
+                                }
+                            }
+                            //determines if there's more than one winner
+
+                            if (winnersCount > 1) {
+                                System.out.println("It's a draw! Multiple players tied with " + highestScore + " points.");
+                                System.out.print("Winners: ");
+                                for (int i = 0; i < playerScores.size(); i++) {
+                                    if (playerScores.get(i) == highestScore) {
+                                        System.out.print(playerList.get(i) + " ");
+                                    }
+                                }
+                                System.out.println();
+                                //draw condition
+                            } else {
+                                for (int i = 0; i < playerScores.size(); i++) {
+                                    if (playerScores.get(i) == highestScore) {
+                                        System.out.println(playerList.get(i) + " won with " + highestScore + " points!");
+                                        break;
+                                        //win condition
+                                    }
+                                }
+                            }
+                            System.out.println("Would you like to play again? (yes/no)");
+                            String response = sc.nextLine().toLowerCase();
+                            if (response.equals("no")) {
+                                System.out.println("Thanks for playing!");
+                                mainGame = false;
+                                mainMenu = true;
+                                break;
+                            } else {
+                                for (int individualScore : playerScores) {
+                                    individualScore = 0;
+                                }
+                                for (int i = 0; i < pointList.size(); i++) {
+                                    pointList = originalPointList;
+                                }
+                                //this resets all the points turned to 0 back to the original inputted values
+                                break;
+                            }
+                        }
+                        currentPlayerIndex = (currentPlayerIndex + 1) % playerNum;
+                    }
+                }
+            } else if (!menuChoice.equals("play") || !menuChoice.equals("add question")) {
+                System.out.println("invalid input");
+            }
+        }
+    }
+}
